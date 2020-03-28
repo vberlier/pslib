@@ -1,2 +1,3 @@
 # pslib
-A python library for interacting with Pokémon Showdown.
+
+> A python library for interacting with Pokémon Showdown.
