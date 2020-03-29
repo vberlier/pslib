@@ -1,6 +1,7 @@
 __all__ = ["HttpContext", "WebsocketContext"]
 
 
+import json
 from random import choices
 from string import ascii_lowercase, digits
 from dataclasses import dataclass
@@ -9,7 +10,7 @@ from contextlib import asynccontextmanager
 import aiohttp
 import websockets
 
-from .errors import ShowdownConnectionFailed
+from .errors import ShowdownConnectionFailed, InvalidPayloadFormat
 
 
 SERVER_INFO_URL = "https://pokemonshowdown.com/servers/{}.json"
@@ -51,3 +52,28 @@ class WebsocketContext:
             if await ws.recv() != "o":
                 raise ShowdownConnectionFailed()
             yield cls(ws)
+
+    @staticmethod
+    def decode_payload(payload):
+        if not payload.startswith("a"):
+            raise InvalidPayloadFormat("Expected prefix 'a'")
+
+        try:
+            data = json.loads(payload[1:])
+        except json.JSONDecodeError as exc:
+            raise InvalidPayloadFormat("Expected valid json") from exc
+
+        for message_batch in data:
+            room = ""
+
+            if message_batch.startswith(">"):
+                room, _, message_batch = message_batch[1:].partition("\n")
+
+            for line in message_batch.splitlines():
+                if raw_message := line.strip():
+                    yield room, raw_message
+
+    async def raw_messages(self):
+        async for payload in self.protocol:
+            for room, raw_message in self.decode_payload(payload):
+                yield room, raw_message

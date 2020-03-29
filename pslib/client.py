@@ -20,3 +20,7 @@ class Client:
                 uri = await http.resolve_server_uri(server_id=server, server_host=host)
             async with WebsocketContext.create(uri) as ws:
                 yield cls(http, ws)
+
+    async def listen(self):
+        async for room, raw_message in self.ws.raw_messages():
+            yield room, raw_message
