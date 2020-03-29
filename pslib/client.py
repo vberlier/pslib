@@ -19,7 +19,7 @@ class Client(Room):
         self.rooms = RoomRegistry(self)
         self.rooms["lobby"] = self
 
-        self.messages = MessageDispatcher()
+        self.received_messages = MessageDispatcher()
 
     @classmethod
     @asynccontextmanager
@@ -40,8 +40,8 @@ class Client(Room):
         async for room_id, raw_message in self.ws.raw_messages():
             message = parse_message(raw_message)
             message.set_room(self.rooms[room_id])
-            self.messages.dispatch(message)
+            self.received_messages.dispatch(message)
 
     async def listen(self, message_cls=None):
-        async for message in self.messages.listen(message_cls):
+        async for message in self.received_messages.listen(message_cls):
             yield message
