@@ -29,15 +29,15 @@ class HttpContext:
         async with self.session.get(*args, **kwargs) as response:
             return await response.json()
 
-    async def resolve_server_uri(self, server="showdown", *, host=None):
-        if host is None:
-            info = await self.get_json(SERVER_INFO_URL.format(server))
-            host = "{host}:{port}".format(**info)
+    async def resolve_server_uri(self, server_id="showdown", *, server_host=None):
+        if server_host is None:
+            info = await self.get_json(SERVER_INFO_URL.format(server_id))
+            server_host = "{host}:{port}".format(**info)
 
         server_number = "".join(choices(digits, k=3))
         session_id = "".join(choices(ascii_lowercase + digits, k=8))
 
-        return f"ws://{host}/showdown/{server_number}/{session_id}/websocket"
+        return f"ws://{server_host}/showdown/{server_number}/{session_id}/websocket"
 
 
 @dataclass

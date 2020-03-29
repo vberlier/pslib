@@ -17,6 +17,6 @@ class Client:
     async def connect(cls, server="showdown", *, host=None, uri=None):
         async with HttpContext.create() as http:
             if uri is None:
-                uri = await http.resolve_server_uri(server=server, host=host)
+                uri = await http.resolve_server_uri(server_id=server, server_host=host)
             async with WebsocketContext.create(uri) as ws:
                 yield cls(http, ws)
