@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 import aiohttp
 import websockets
 
-from .errors import ShowdownConnectionFailed, InvalidPayloadFormat
+from .errors import ServerConnectionFailed, InvalidPayloadFormat
 
 
 SERVER_INFO_URL = "https://pokemonshowdown.com/servers/{}.json"
@@ -50,7 +50,7 @@ class WebsocketContext:
     async def create(cls, uri):
         async with websockets.connect(uri) as ws:
             if await ws.recv() != "o":
-                raise ShowdownConnectionFailed()
+                raise ServerConnectionFailed("Expected server acknowledgment")
             yield cls(ws)
 
     @staticmethod

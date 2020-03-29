@@ -1,13 +1,12 @@
-__all__ = ["PslibError", "ShowdownConnectionFailed", "InvalidPayloadFormat"]
+__all__ = ["PslibError", "ServerConnectionFailed", "InvalidPayloadFormat"]
 
 
 class PslibError(Exception):
     pass
 
 
-class ShowdownConnectionFailed(PslibError):
-    def __init__(self):
-        super().__init__("Didn't receive server acknowledgment")
+class ServerConnectionFailed(PslibError):
+    pass
 
 
 class InvalidPayloadFormat(PslibError):
