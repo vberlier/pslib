@@ -72,7 +72,7 @@ class WebsocketContext:
                 if raw_message := line.strip():
                     yield room_id, raw_message
 
-    async def raw_messages(self):
+    async def receive_raw_messages(self):
         async for payload in self.protocol:
             for room_id, raw_message in self.decode_payload(payload):
                 yield room_id, raw_message

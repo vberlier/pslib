@@ -37,7 +37,7 @@ class Client(Room):
             yield self
 
     async def _receive_messages(self):
-        async for room_id, raw_message in self.ws.raw_messages():
+        async for room_id, raw_message in self.ws.receive_raw_messages():
             message = parse_message(raw_message)
             message.set_room(self.rooms[room_id])
             self.received_messages.dispatch(message)
