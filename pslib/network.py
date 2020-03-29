@@ -47,9 +47,9 @@ class WebsocketContext:
 
     @classmethod
     @asynccontextmanager
-    async def create(cls, uri):
+    async def create(cls, uri, *, sticky=True):
         async with websockets.connect(uri) as ws:
-            if await ws.recv() != "o":
+            if sticky and await ws.recv() != "o":
                 raise ServerConnectionFailed("Expected server acknowledgment")
             yield cls(ws)
 

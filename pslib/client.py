@@ -14,11 +14,11 @@ class Client:
 
     @classmethod
     @asynccontextmanager
-    async def connect(cls, server="showdown", *, host=None, uri=None):
+    async def connect(cls, server="showdown", *, host=None, uri=None, sticky=True):
         async with HttpContext.create() as http:
             if uri is None:
                 uri = await http.resolve_server_uri(server_id=server, server_host=host)
-            async with WebsocketContext.create(uri) as ws:
+            async with WebsocketContext.create(uri, sticky=sticky) as ws:
                 yield cls(http, ws)
 
     async def listen(self):
