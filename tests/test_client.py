@@ -11,11 +11,6 @@ async def test_connect():
         pass
 
 
-async def test_connect_server():
-    async with Client.connect("smogtours"):
-        pass
-
-
 async def test_connect_host():
     async with Client.connect(host="sim.smogon.com:8000"):
         pass
