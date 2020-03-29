@@ -21,8 +21,16 @@ class Room:
         self.id = room_id
         self.logs = deque(maxlen=maxlogs)
 
+    def __eq__(self, other):
+        return type(self) == type(other) and self.id == other.id
+
     def _handle_message(self, message):
         self.logs.append(message)
 
     def serialize_logs(self):
         return "\n".join(message.serialize() or "|" for message in self.logs)
+
+    async def listen(self, message_cls=None, *, all_rooms=False):
+        async for message in self.client.received_messages.listen(message_cls):
+            if all_rooms or message.room == self:
+                yield message

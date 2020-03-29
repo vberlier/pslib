@@ -41,7 +41,3 @@ class Client(Room):
             message = parse_message(raw_message)
             message.set_room(self.rooms[room_id])
             self.received_messages.dispatch(message)
-
-    async def listen(self, message_cls=None):
-        async for message in self.received_messages.listen(message_cls):
-            yield message
