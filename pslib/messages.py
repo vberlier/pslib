@@ -1,14 +1,22 @@
 __all__ = [
     "parse_message",
+    "MessageDispatcher",
     "Message",
     "UnrecognizedMessage",
     "PlainTextMessage",
     "UpdateUserMessage",
+    "QueryResponseMessage",
+    "WinMessage",
+    "RawMessage",
 ]
 
 
 import json
+import itertools
+from collections import defaultdict
+from weakref import WeakSet
 from dataclasses import dataclass
+import asyncio
 
 from .errors import InvalidMessageParameters
 from .utils import compose
@@ -24,6 +32,25 @@ def parse_message(raw_message):
 
     cls = MESSAGE_CLASS_REGISTRY.get(message_type, UnrecognizedMessage)
     return cls(message_type, raw_message)
+
+
+class MessageDispatcher:
+    def __init__(self):
+        self.listeners = defaultdict(WeakSet)
+
+    def dispatch(self, message):
+        generic = self.listeners[None]
+        specific = self.listeners[type(message)]
+
+        for listener in itertools.chain(generic, specific):
+            listener.put_nowait(message)
+
+    async def listen(self, message_cls=None):
+        queue = asyncio.Queue()
+        self.listeners[message_cls].add(queue)
+
+        while message := await queue.get():
+            yield message
 
 
 @dataclass
@@ -49,6 +76,10 @@ class Message:
 
         return (func(param) for param, func in zip(params, transformers))
 
+    def set_room(self, room):
+        self.room = room
+        room.handle_message(self)
+
     def serialize(self):
         return f"|{self.type}|{self.value}"
 
@@ -67,3 +98,17 @@ class UpdateUserMessage(Message, match=["updateuser"]):
         self.user, self.named, self.avatar, self.settings = self.unpack(
             str, compose(bool, int), int, json.loads
         )
+
+
+class QueryResponseMessage(Message, match=["queryresponse"]):
+    def hydrate(self):
+        self.querytype, self.result = self.unpack(str, json.loads)
+
+
+class WinMessage(Message, match=["win"]):
+    def hydrate(self):
+        (self.user_id,) = self.unpack(str)
+
+
+class RawMessage(Message, match=["raw"]):
+    pass
