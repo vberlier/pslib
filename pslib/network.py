@@ -4,7 +4,6 @@ __all__ = ["HttpContext", "WebsocketContext"]
 import json
 import random
 from string import ascii_lowercase, digits
-from dataclasses import dataclass
 from contextlib import asynccontextmanager
 
 import aiohttp
@@ -16,9 +15,9 @@ from .errors import ServerConnectionFailed, InvalidPayloadFormat
 SERVER_INFO_URL = "https://pokemonshowdown.com/servers/{}.json"
 
 
-@dataclass
 class HttpContext:
-    session: aiohttp.ClientSession
+    def __init__(self, session):
+        self.session = session
 
     @classmethod
     @asynccontextmanager
@@ -41,9 +40,9 @@ class HttpContext:
         return f"ws://{server_host}/showdown/{server_number}/{session_id}/websocket"
 
 
-@dataclass
 class WebsocketContext:
-    protocol: websockets.WebSocketClientProtocol
+    def __init__(self, protocol):
+        self.protocol = protocol
 
     @classmethod
     @asynccontextmanager

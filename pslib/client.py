@@ -2,16 +2,15 @@ __all__ = ["Client"]
 
 
 from contextlib import asynccontextmanager
-from dataclasses import dataclass
 
 from .network import HttpContext, WebsocketContext
 from .messages import parse_message
 
 
-@dataclass
 class Client:
-    http: HttpContext
-    ws: WebsocketContext
+    def __init__(self, http, ws):
+        self.http = http
+        self.ws = ws
 
     @classmethod
     @asynccontextmanager
