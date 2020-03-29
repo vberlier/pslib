@@ -1,4 +1,9 @@
-__all__ = ["PslibError", "ServerConnectionFailed", "InvalidPayloadFormat"]
+__all__ = [
+    "PslibError",
+    "ServerConnectionFailed",
+    "InvalidPayloadFormat",
+    "InvalidMessageParameters",
+]
 
 
 class PslibError(Exception):
@@ -10,4 +15,8 @@ class ServerConnectionFailed(PslibError):
 
 
 class InvalidPayloadFormat(PslibError):
+    pass
+
+
+class InvalidMessageParameters(PslibError):
     pass

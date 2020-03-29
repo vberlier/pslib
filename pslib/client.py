@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from dataclasses import dataclass
 
 from .network import HttpContext, WebsocketContext
+from .messages import parse_message
 
 
 @dataclass
@@ -23,4 +24,4 @@ class Client:
 
     async def listen(self):
         async for room, raw_message in self.ws.raw_messages():
-            yield room, raw_message
+            yield parse_message(raw_message)
