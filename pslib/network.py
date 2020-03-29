@@ -2,7 +2,7 @@ __all__ = ["HttpContext", "WebsocketContext"]
 
 
 import json
-from random import choices
+import random
 from string import ascii_lowercase, digits
 from dataclasses import dataclass
 from contextlib import asynccontextmanager
@@ -35,8 +35,8 @@ class HttpContext:
             info = await self.get_json(SERVER_INFO_URL.format(server_id))
             server_host = "{host}:{port}".format(**info)
 
-        server_number = "".join(choices(digits, k=3))
-        session_id = "".join(choices(ascii_lowercase + digits, k=8))
+        server_number = "".join(random.choices(digits, k=3))
+        session_id = "".join(random.choices(ascii_lowercase + digits, k=8))
 
         return f"ws://{server_host}/showdown/{server_number}/{session_id}/websocket"
 
