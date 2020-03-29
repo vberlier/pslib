@@ -1,7 +1,7 @@
-from collections import deque
-
-
 __all__ = ["RoomRegistry", "Room"]
+
+
+from collections import deque
 
 
 class RoomRegistry(dict):
