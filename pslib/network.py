@@ -63,16 +63,16 @@ class WebsocketContext:
             raise InvalidPayloadFormat("Expected valid json") from exc
 
         for message_batch in data:
-            room = ""
+            room_id = "lobby"
 
             if message_batch.startswith(">"):
-                room, _, message_batch = message_batch[1:].partition("\n")
+                room_id, _, message_batch = message_batch[1:].partition("\n")
 
             for line in message_batch.splitlines():
                 if raw_message := line.strip():
-                    yield room, raw_message
+                    yield room_id, raw_message
 
     async def raw_messages(self):
         async for payload in self.protocol:
-            for room, raw_message in self.decode_payload(payload):
-                yield room, raw_message
+            for room_id, raw_message in self.decode_payload(payload):
+                yield room_id, raw_message
