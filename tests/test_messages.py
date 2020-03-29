@@ -9,6 +9,18 @@ from pslib import (
 )
 
 
+@pytest.mark.parametrize(
+    "raw_message",
+    [
+        "|something|foo",
+        "Hello, world!",
+        '|updateuser| Guest 3642588|0|102|{"isSysop":false,"isStaff":false,"blockChallenges":false,"blockPMs":false,"ignoreTickets":false,"lastConnected":1585447346979,"lastDisconnected":0,"inviteOnlyNextBattle":false,"statusType":"online"}',
+    ],
+)
+def test_serialize(raw_message):
+    assert parse_message(raw_message).serialize() == raw_message
+
+
 def test_unrecognized():
     assert parse_message("|something|foo") == UnrecognizedMessage("something", "foo")
 
