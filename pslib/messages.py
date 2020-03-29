@@ -78,7 +78,7 @@ class Message:
 
     def set_room(self, room):
         self.room = room
-        room.handle_message(self)
+        room._handle_message(self)
 
     def serialize(self):
         return f"|{self.type}|{self.value}"

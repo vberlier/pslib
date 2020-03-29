@@ -33,10 +33,10 @@ class Client(Room):
 
     @asynccontextmanager
     async def start(self):
-        async with concurrent_tasks(self.receive_messages()):
+        async with concurrent_tasks(self._receive_messages()):
             yield self
 
-    async def receive_messages(self):
+    async def _receive_messages(self):
         async for room_id, raw_message in self.ws.raw_messages():
             message = parse_message(raw_message)
             message.set_room(self.rooms[room_id])

@@ -21,7 +21,7 @@ class Room:
         self.id = room_id
         self.logs = deque(maxlen=maxlogs)
 
-    def handle_message(self, message):
+    def _handle_message(self, message):
         self.logs.append(message)
 
     def serialize_logs(self):
