@@ -6,6 +6,7 @@ __all__ = [
     "UnrecognizedMessage",
     "PlainTextMessage",
     "UpdateUserMessage",
+    "ChallstrMessage",
     "QueryResponseMessage",
     "WinMessage",
     "RawMessage",
@@ -127,6 +128,11 @@ class UpdateUserMessage(Message, match=["updateuser"]):
         self.user, self.named, self.avatar, self.settings = self.unpack(
             str, compose(bool, int), int, json.loads
         )
+
+
+class ChallstrMessage(Message, match=["challstr"]):
+    def hydrate(self):
+        (self.challstr,) = self.unpack(str)
 
 
 class QueryResponseMessage(Message, match=["queryresponse"]):
