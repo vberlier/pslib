@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pslib"
-version = "0.0.0"
+version = "0.0.1"
 description = "A python library for interacting with Pokémon Showdown"
 authors = ["Valentin Berlier <berlier.v@gmail.com>"]
 license = "MIT"
