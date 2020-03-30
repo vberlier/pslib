@@ -19,7 +19,7 @@ class RoomState:
 class ClientState(RoomState):
     @dataclass
     class UserInfo:
-        name: str
+        username: str
         busy: bool
         named: bool
         avatar: int
