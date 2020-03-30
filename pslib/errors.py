@@ -3,6 +3,8 @@ __all__ = [
     "ServerConnectionFailed",
     "InvalidPayloadFormat",
     "InvalidMessageParameters",
+    "ServerIdNotSpecified",
+    "InvalidServerActionResponse",
 ]
 
 
@@ -19,4 +21,12 @@ class InvalidPayloadFormat(PslibError):
 
 
 class InvalidMessageParameters(PslibError):
+    pass
+
+
+class ServerIdNotSpecified(PslibError):
+    pass
+
+
+class InvalidServerActionResponse(PslibError):
     pass

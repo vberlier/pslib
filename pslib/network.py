@@ -9,15 +9,22 @@ from contextlib import asynccontextmanager
 import aiohttp
 import websockets
 
-from .errors import ServerConnectionFailed, InvalidPayloadFormat
+from .errors import (
+    ServerConnectionFailed,
+    InvalidPayloadFormat,
+    ServerIdNotSpecified,
+    InvalidServerActionResponse,
+)
 
 
 SERVER_INFO_URL = "https://pokemonshowdown.com/servers/{}.json"
+SERVER_ACTION_URL = "https://play.pokemonshowdown.com/~~{}/action.php"
 
 
 class HttpContext:
     def __init__(self, session):
         self.session = session
+        self.server_id = None
 
     @classmethod
     @asynccontextmanager
@@ -29,10 +36,29 @@ class HttpContext:
         async with self.session.get(*args, **kwargs) as response:
             return await response.json()
 
+    async def post_action(self, data, *, server_id=None):
+        server_id = server_id or self.server_id
+        if not server_id:
+            raise ServerIdNotSpecified("Expected explicit server_id")
+
+        action_url = SERVER_ACTION_URL.format(server_id)
+
+        async with self.session.post(action_url, data=data) as response:
+            text = await response.text()
+
+            if not text.startswith("]"):
+                raise InvalidServerActionResponse("Expected prefix ']'")
+
+            try:
+                return json.loads(text[1:])
+            except json.JSONDecodeError as exc:
+                raise InvalidServerActionResponse("Expected valid json") from exc
+
     async def resolve_server_uri(self, server_id="showdown", *, server_host=None):
         if server_host is None:
             info = await self.get_json(SERVER_INFO_URL.format(server_id))
             server_host = "{host}:{port}".format(**info)
+            self.server_id = server_id
 
         server_number = "".join(random.choices(digits, k=3))
         session_id = "".join(random.choices(ascii_lowercase + digits, k=8))
