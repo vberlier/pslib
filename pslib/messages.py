@@ -130,6 +130,8 @@ class UpdateUserMessage(Message, match=["updateuser"]):
         if self.busy:
             self.username = self.username[:-2]
 
+        self.username = self.username[1:]
+
 
 class ChallstrMessage(Message, match=["challstr"]):
     def hydrate(self):
