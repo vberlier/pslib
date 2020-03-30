@@ -94,23 +94,19 @@ class WebsocketContext:
         if self.sticky:
             if not payload.startswith("a"):
                 raise InvalidPayloadFormat("Expected prefix 'a'")
-
             try:
-                data = json.loads(payload[1:])
-            except json.JSONDecodeError as exc:
+                payload = json.loads(payload[1:])[0]
+            except (json.JSONDecodeError, IndexError) as exc:
                 raise InvalidPayloadFormat("Expected valid json") from exc
-        else:
-            data = [payload]
 
-        for message_batch in data:
-            room_id = "lobby"
+        room_id = "lobby"
 
-            if message_batch.startswith(">"):
-                room_id, _, message_batch = message_batch[1:].partition("\n")
+        if payload.startswith(">"):
+            room_id, _, payload = payload[1:].partition("\n")
 
-            for line in message_batch.splitlines():
-                if raw_message := line.strip():
-                    yield room_id, raw_message
+        for line in payload.splitlines():
+            if raw_message := line.strip():
+                yield room_id, raw_message
 
     async def receive_raw_messages(self):
         async for payload in self.protocol:
