@@ -19,10 +19,11 @@ async def test_connect():
         await c1.private_message("pslib-dev-ci-2", "hello")
         print("SUCCESS")
         await asyncio.sleep(3)
-        assert False
 
     async with connect() as c1, connect() as c2:
         await asyncio.gather(log("c1", c1), log("c2", c2), main(c1, c2))
+
+    pytest.fail()
 
 
 async def test_connect_host():
