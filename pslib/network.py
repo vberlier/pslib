@@ -60,11 +60,16 @@ class HttpContext:
             else:
                 return text
 
-    async def resolve_server_uri(self, server_id="showdown", *, server_host=None):
+    async def resolve_server_uri(
+        self, server_id="showdown", *, server_host=None, sticky=True
+    ):
         if server_host is None:
             self.server_id = server_id
             info = await self.get_info()
             server_host = "{host}:{port}".format(**info)
+
+        if not sticky:
+            return f"ws://{server_host}/showdown/websocket"
 
         server_number = "".join(random.choices(digits, k=3))
         session_id = "".join(random.choices(ascii_lowercase + digits, k=8))
@@ -73,8 +78,9 @@ class HttpContext:
 
 
 class WebsocketContext:
-    def __init__(self, protocol):
+    def __init__(self, protocol, *, sticky=True):
         self.protocol = protocol
+        self.sticky = sticky
 
     @classmethod
     @asynccontextmanager
@@ -82,17 +88,19 @@ class WebsocketContext:
         async with websockets.connect(uri) as ws:
             if sticky and await ws.recv() != "o":
                 raise ServerConnectionFailed("Expected server acknowledgment")
-            yield cls(ws)
+            yield cls(ws, sticky=sticky)
 
-    @staticmethod
-    def decode_payload(payload):
-        if not payload.startswith("a"):
-            raise InvalidPayloadFormat("Expected prefix 'a'")
+    def decode_payload(self, payload):
+        if self.sticky:
+            if not payload.startswith("a"):
+                raise InvalidPayloadFormat("Expected prefix 'a'")
 
-        try:
-            data = json.loads(payload[1:])
-        except json.JSONDecodeError as exc:
-            raise InvalidPayloadFormat("Expected valid json") from exc
+            try:
+                data = json.loads(payload[1:])
+            except json.JSONDecodeError as exc:
+                raise InvalidPayloadFormat("Expected valid json") from exc
+        else:
+            data = [payload]
 
         for message_batch in data:
             room_id = "lobby"
@@ -110,4 +118,5 @@ class WebsocketContext:
                 yield room_id, raw_message
 
     async def send_raw_message(self, raw_message):
-        await self.protocol.send(json.dumps([raw_message]))
+        data = json.dumps([raw_message]) if self.sticky else raw_message
+        await self.protocol.send(data)
