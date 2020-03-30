@@ -5,6 +5,7 @@ __all__ = [
     "InvalidMessageParameters",
     "ServerIdNotSpecified",
     "InvalidServerActionResponse",
+    "ServerLoginFailed",
 ]
 
 
@@ -29,4 +30,8 @@ class ServerIdNotSpecified(PslibError):
 
 
 class InvalidServerActionResponse(PslibError):
+    pass
+
+
+class ServerLoginFailed(PslibError):
     pass
