@@ -104,7 +104,8 @@ class Message:
         if len(params) != len(transformers):
             raise InvalidMessageParameters(f"Expected {len(transformers)} parameters")
 
-        return (func(param) for param, func in zip(params, transformers))
+        unpacked = [func(param) for param, func in zip(params, transformers)]
+        return unpacked[0] if len(transformers) == 1 else unpacked
 
     def serialize(self):
         return f"|{self.type}|{self.value}"
@@ -135,7 +136,7 @@ class UpdateUserMessage(Message, match=["updateuser"]):
 
 class ChallstrMessage(Message, match=["challstr"]):
     def hydrate(self):
-        (self.challstr,) = self.unpack(str)
+        self.challstr = self.unpack(str)
 
 
 class QueryResponseMessage(Message, match=["queryresponse"]):
@@ -145,7 +146,7 @@ class QueryResponseMessage(Message, match=["queryresponse"]):
 
 class WinMessage(Message, match=["win"]):
     def hydrate(self):
-        (self.user_id,) = self.unpack(str)
+        self.user_id = self.unpack(str)
 
 
 class RawMessage(Message, match=["raw"]):
