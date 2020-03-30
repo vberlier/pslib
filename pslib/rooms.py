@@ -28,8 +28,8 @@ class Room(GlobalCommandsMixin):
     def __eq__(self, other):
         return type(self) == type(other) and self.id == other.id
 
-    async def _handle_message(self, message):
-        await self.state._handle_message(message)
+    async def handle_message(self, message):
+        await self.state.handle_message(message)
 
     def serialize_logs(self):
         return "\n".join(message.serialize() or "|" for message in self.state.logs)

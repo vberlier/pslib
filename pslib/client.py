@@ -40,8 +40,13 @@ class Client(Room):
 
     async def _receive_messages(self):
         async for room_id, raw_message in self.ws.receive_raw_messages():
+            room = self.rooms[room_id]
+
             message = parse_message(raw_message)
-            await message.set_room(self.rooms[room_id])
+            message.room = room
+
+            await room.handle_message(message)
+
             self.received_messages.dispatch(message)
 
     async def _send_messages(self):
