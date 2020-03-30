@@ -121,14 +121,14 @@ class PlainTextMessage(Message, match=[""]):
 
 class UpdateUserMessage(Message, match=["updateuser"]):
     def hydrate(self):
-        self.user, self.named, self.avatar, self.settings = self.unpack(
+        self.username, self.named, self.avatar, self.settings = self.unpack(
             str, compose(bool, int), int, json.loads
         )
 
-        self.busy = self.user.endswith("@!")
+        self.busy = self.username.endswith("@!")
 
         if self.busy:
-            self.user = self.user[:-2]
+            self.username = self.username[:-2]
 
 
 class ChallstrMessage(Message, match=["challstr"]):

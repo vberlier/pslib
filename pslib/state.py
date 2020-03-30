@@ -40,7 +40,7 @@ class ClientState(RoomState):
 
             self.user.set_result(
                 ClientState.UserInfo(
-                    message.user,
+                    message.username,
                     message.busy,
                     message.named,
                     message.avatar,
