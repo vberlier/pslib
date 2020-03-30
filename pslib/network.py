@@ -52,13 +52,13 @@ class HttpContext:
         async with self.session.post(action_url, data=data) as response:
             text = await response.text()
 
-            if not text.startswith("]"):
-                raise InvalidServerActionResponse("Expected prefix ']'")
-
-            try:
-                return json.loads(text[1:])
-            except json.JSONDecodeError as exc:
-                raise InvalidServerActionResponse("Expected valid json") from exc
+            if text.startswith("]"):
+                try:
+                    return json.loads(text[1:])
+                except json.JSONDecodeError as exc:
+                    raise InvalidServerActionResponse("Expected valid json") from exc
+            else:
+                return text
 
     async def resolve_server_uri(self, server_id="showdown", *, server_host=None):
         if server_host is None:
