@@ -7,6 +7,7 @@ from pslib import connect, ServerConnectionFailed, PrivateMessage
 pytestmark = pytest.mark.asyncio
 
 
+@pytest.mark.skip
 @pytest.mark.timeout(30)
 async def test_connect():
     async def log(name, client):
