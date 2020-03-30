@@ -31,8 +31,9 @@ class GlobalCommandsMixin:
             "none" if minimum_elo is None else minimum_elo,
             username_prefix,
         ):
-            async for response in self.listen(QueryResponseMessage):
+            async for response in self.client.listen(QueryResponseMessage):
                 if response.querytype == "roomlist":
                     return [
-                        self.rooms[battle_id] for battle_id in response.result["rooms"]
+                        self.client.rooms[battle_id]
+                        for battle_id in response.result["rooms"]
                     ]
