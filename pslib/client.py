@@ -4,7 +4,7 @@ __all__ = ["Client"]
 from contextlib import asynccontextmanager
 
 from .network import HttpContext, WebsocketContext
-from .messages import MessageDispatcher, MessageQueue, parse_message
+from .messages import InboundMessageManager, OutboundMessageManager, parse_message
 from .rooms import RoomRegistry, Room
 from .utils import concurrent_tasks
 
@@ -19,8 +19,8 @@ class Client(Room):
         self.rooms = RoomRegistry(self)
         self.rooms["lobby"] = self
 
-        self.received_messages = MessageDispatcher()
-        self.sent_messages = MessageQueue()
+        self.received_messages = InboundMessageManager()
+        self.sent_messages = OutboundMessageManager()
 
     @classmethod
     @asynccontextmanager

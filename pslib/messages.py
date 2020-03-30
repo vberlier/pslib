@@ -1,7 +1,7 @@
 __all__ = [
     "parse_message",
-    "MessageDispatcher",
-    "MessageQueue",
+    "InboundMessageManager",
+    "OutboundMessageManager",
     "Message",
     "UnrecognizedMessage",
     "PlainTextMessage",
@@ -36,7 +36,7 @@ def parse_message(raw_message):
     return cls(message_type, raw_message)
 
 
-class MessageDispatcher:
+class InboundMessageManager:
     def __init__(self):
         self.listeners = defaultdict(WeakSet)
 
@@ -55,7 +55,7 @@ class MessageDispatcher:
             yield message
 
 
-class MessageQueue:
+class OutboundMessageManager:
     def __init__(self):
         self.queue = asyncio.Queue()
 
