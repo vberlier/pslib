@@ -7,6 +7,7 @@ __all__ = [
     "PlainTextMessage",
     "UpdateUserMessage",
     "ChallstrMessage",
+    "PrivateMessage",
     "QueryResponseMessage",
     "WinMessage",
     "RawMessage",
@@ -135,6 +136,13 @@ class UpdateUserMessage(Message, match=["updateuser"]):
 class ChallstrMessage(Message, match=["challstr"]):
     def hydrate(self):
         self.challstr = self.unpack(str)
+
+
+class PrivateMessage(Message, match=["pm"]):
+    def hydrate(self):
+        self.sender, self.receiver, self.content = self.unpack(
+            compose(str.strip, str), compose(str.strip, str), str
+        )
 
 
 class QueryResponseMessage(Message, match=["queryresponse"]):
