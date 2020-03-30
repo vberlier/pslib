@@ -1,5 +1,9 @@
 # pslib
 
+[![Build Status](https://travis-ci.com/vberlier/pslib.svg?branch=master)](https://travis-ci.com/vberlier/pslib)
+[![PyPI](https://img.shields.io/pypi/v/pslib.svg)](https://pypi.org/project/pslib/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pslib.svg)](https://pypi.org/project/pslib/)
+
 > A python library for interacting with Pokémon Showdown.
 
 **🚧 Work in progress 🚧**
