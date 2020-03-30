@@ -5,6 +5,20 @@ description = "A python library for interacting with Pokémon Showdown"
 authors = ["Valentin Berlier <berlier.v@gmail.com>"]
 license = "MIT"
 
+homepage = "https://github.com/vberlier/pslib"
+repository = "https://github.com/vberlier/pslib"
+documentation = "https://github.com/vberlier/pslib"
+
+readme = "README.md"
+
+keywords = [
+  "pokemon-showdown",
+  "pokemon-showdown-bot",
+  "websockets",
+  "client",
+  "pslib",
+]
+
 [tool.poetry.dependencies]
 python = "^3.8"
 aiohttp = "^3.6.2"
