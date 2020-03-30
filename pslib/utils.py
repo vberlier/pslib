@@ -1,4 +1,4 @@
-__all__ = ["compose"]
+__all__ = ["compose", "concurrent_tasks"]
 
 
 import asyncio
