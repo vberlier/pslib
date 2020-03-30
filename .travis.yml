@@ -13,7 +13,7 @@ install:
   - poetry install
 
 script:
-  - poetry run pytest
+  - poetry run pytest -vv
   - poetry run black --check pslib tests
 
 jobs:
