@@ -1,4 +1,4 @@
-__all__ = ["compose", "concurrent_tasks", "into_id"]
+__all__ = ["compose", "concurrent_tasks", "into_id", "AsyncAttribute"]
 
 
 import re
@@ -33,3 +33,17 @@ async def concurrent_tasks(*coroutines):
 
 def into_id(string):
     return re.sub(r"(\W|_)", "", string.lower())
+
+
+class AsyncAttribute:
+    def __init__(self):
+        self.future = asyncio.Future()
+
+    def __await__(self):
+        return self.future.__await__()
+
+    def set(self, value):
+        if self.future.done():
+            self.future = asyncio.Future()
+
+        self.future.set_result(value)

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 import asyncio
 
 from .messages import UpdateUserMessage, ChallstrMessage
+from .utils import AsyncAttribute
 
 
 class RoomState:
@@ -27,24 +28,18 @@ class ClientState(RoomState):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.user = asyncio.Future()
-        self.challstr = asyncio.Future()
+        self.user = AsyncAttribute()
+        self.challstr = AsyncAttribute()
 
     async def handle_message(self, message):
         await super().handle_message(message)
 
         if isinstance(message, UpdateUserMessage):
-            if self.user.done():
-                self.user = asyncio.Future()
-
-            self.user.set_result(
+            self.user.set(
                 ClientState.UserInfo(
                     message.userid, message.named, message.avatar, message.settings,
                 )
             )
 
         elif isinstance(message, ChallstrMessage):
-            if self.challstr.done():
-                self.challstr = asyncio.Future()
-
-            self.challstr.set_result(message.challstr)
+            self.challstr.set(message.challstr)
