@@ -1,7 +1,11 @@
-__all__ = ["RoomState"]
+__all__ = ["RoomState", "ClientState"]
 
 
 from collections import deque
+from dataclasses import dataclass
+import asyncio
+
+from .messages import UpdateUserMessage
 
 
 class RoomState:
@@ -10,3 +14,35 @@ class RoomState:
 
     async def handle_message(self, message):
         self.logs.append(message)
+
+
+class ClientState(RoomState):
+    @dataclass
+    class UserInfo:
+        name: str
+        busy: bool
+        named: bool
+        avatar: int
+        settings: dict
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.user = asyncio.Future()
+
+    async def handle_message(self, message):
+        await super().handle_message(message)
+
+        if isinstance(message, UpdateUserMessage):
+            if self.user.done():
+                self.user = asyncio.Future()
+
+            self.user.set_result(
+                ClientState.UserInfo(
+                    message.user,
+                    message.busy,
+                    message.named,
+                    message.avatar,
+                    message.settings,
+                )
+            )

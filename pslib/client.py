@@ -6,13 +6,13 @@ from contextlib import asynccontextmanager
 from .network import HttpContext, WebsocketContext
 from .messages import InboundMessageManager, OutboundMessageManager, parse_message
 from .rooms import RoomRegistry, Room
-from .state import RoomState
+from .state import ClientState
 from .utils import concurrent_tasks
 
 
 class Client(Room):
     def __init__(self, http, ws):
-        super().__init__(self, "", RoomState(maxlogs=100))
+        super().__init__(self, "", ClientState(maxlogs=100))
 
         self.http = http
         self.ws = ws
