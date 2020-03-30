@@ -6,6 +6,7 @@ __all__ = [
     "ServerIdNotSpecified",
     "InvalidServerActionResponse",
     "ServerLoginFailed",
+    "PrivateMessageError",
 ]
 
 
@@ -34,4 +35,8 @@ class InvalidServerActionResponse(PslibError):
 
 
 class ServerLoginFailed(PslibError):
+    pass
+
+
+class PrivateMessageError(PslibError):
     pass

@@ -1,8 +1,8 @@
 __all__ = ["GlobalCommandsMixin"]
 
 
-from .messages import UpdateUserMessage, QueryResponseMessage
-from .errors import ServerLoginFailed
+from .messages import UpdateUserMessage, PrivateMessage, QueryResponseMessage
+from .errors import ServerLoginFailed, PrivateMessageError
 from .utils import into_id
 
 
@@ -39,6 +39,16 @@ class GlobalCommandsMixin:
         async with self.client.send_command("trn", username, 0, assertion):
             async for message in self.client.listen(UpdateUserMessage):
                 if message.userid == userid:
+                    break
+
+    async def private_message(self, receiver, content):
+        receiver = into_id(receiver)
+
+        async with self.client.send_command("pm", receiver, content):
+            async for message in self.client.listen(PrivateMessage):
+                if into_id(message.receiver) == receiver:
+                    if message.content.startswith("/error"):
+                        raise PrivateMessageError(message.content[7:])
                     break
 
     async def query_battles(self, format="", minimum_elo=None, username_prefix=""):
