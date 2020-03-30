@@ -9,6 +9,9 @@ __all__ = [
     "ChallstrMessage",
     "PrivateMessage",
     "QueryResponseMessage",
+    "InitMessage",
+    "TitleMessage",
+    "UsersMessage",
     "WinMessage",
     "RawMessage",
 ]
@@ -141,6 +144,21 @@ class PrivateMessage(Message, match=["pm"]):
 class QueryResponseMessage(Message, match=["queryresponse"]):
     def hydrate(self):
         self.querytype, self.result = self.unpack(str, json.loads)
+
+
+class InitMessage(Message, match=["init"]):
+    def hydrate(self):
+        self.roomtype = self.unpack(str)
+
+
+class TitleMessage(Message, match=["title"]):
+    def hydrate(self):
+        self.title = self.unpack(str)
+
+
+class UsersMessage(Message, match=["users"]):
+    def hydrate(self):
+        self.userlist = list(map(into_id, self.unpack(str).split(",")))
 
 
 class WinMessage(Message, match=["win"]):
