@@ -32,8 +32,14 @@ class HttpContext:
         async with aiohttp.ClientSession() as session:
             yield cls(session)
 
-    async def get_json(self, *args, **kwargs):
-        async with self.session.get(*args, **kwargs) as response:
+    async def get_info(self, *, server_id=None):
+        server_id = server_id or self.server_id
+        if not server_id:
+            raise ServerIdNotSpecified("Expected explicit server_id")
+
+        info_url = SERVER_INFO_URL.format(server_id)
+
+        async with self.session.get(info_url) as response:
             return await response.json()
 
     async def post_action(self, data, *, server_id=None):
@@ -56,9 +62,9 @@ class HttpContext:
 
     async def resolve_server_uri(self, server_id="showdown", *, server_host=None):
         if server_host is None:
-            info = await self.get_json(SERVER_INFO_URL.format(server_id))
-            server_host = "{host}:{port}".format(**info)
             self.server_id = server_id
+            info = await self.get_info()
+            server_host = "{host}:{port}".format(**info)
 
         server_number = "".join(random.choices(digits, k=3))
         session_id = "".join(random.choices(ascii_lowercase + digits, k=8))
