@@ -1,6 +1,7 @@
 __all__ = [
     "parse_message",
     "MessageDispatcher",
+    "MessageQueue",
     "Message",
     "UnrecognizedMessage",
     "PlainTextMessage",
@@ -13,6 +14,7 @@ __all__ = [
 
 import json
 import itertools
+from contextlib import asynccontextmanager
 from collections import defaultdict
 from weakref import WeakSet
 from dataclasses import dataclass
@@ -51,6 +53,33 @@ class MessageDispatcher:
 
         while message := await queue.get():
             yield message
+
+
+class MessageQueue:
+    def __init__(self):
+        self.queue = asyncio.Queue()
+
+    async def collect(self):
+        while entry := await self.queue.get():
+            raw_message, waiting = entry
+
+            try:
+                yield raw_message
+            finally:
+                done = asyncio.Future()
+                waiting.set_result(done)
+                await done
+
+    @asynccontextmanager
+    async def append(self, raw_message):
+        waiting = asyncio.Future()
+        self.queue.put_nowait((raw_message, waiting))
+        done = await waiting
+
+        try:
+            yield
+        finally:
+            done.set_result(None)
 
 
 @dataclass

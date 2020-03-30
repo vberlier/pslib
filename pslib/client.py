@@ -4,7 +4,7 @@ __all__ = ["Client"]
 from contextlib import asynccontextmanager
 
 from .network import HttpContext, WebsocketContext
-from .messages import MessageDispatcher, parse_message
+from .messages import MessageDispatcher, MessageQueue, parse_message
 from .rooms import RoomRegistry, Room
 from .utils import concurrent_tasks
 
@@ -20,6 +20,7 @@ class Client(Room):
         self.rooms["lobby"] = self
 
         self.received_messages = MessageDispatcher()
+        self.sent_messages = MessageQueue()
 
     @classmethod
     @asynccontextmanager
@@ -33,7 +34,7 @@ class Client(Room):
 
     @asynccontextmanager
     async def start(self):
-        async with concurrent_tasks(self._receive_messages()):
+        async with concurrent_tasks(self._receive_messages(), self._send_messages()):
             yield self
 
     async def _receive_messages(self):
@@ -41,3 +42,7 @@ class Client(Room):
             message = parse_message(raw_message)
             message.set_room(self.rooms[room_id])
             self.received_messages.dispatch(message)
+
+    async def _send_messages(self):
+        async for raw_message in self.sent_messages.collect():
+            await self.ws.send_raw_message(raw_message)

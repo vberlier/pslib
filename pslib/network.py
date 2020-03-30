@@ -76,3 +76,6 @@ class WebsocketContext:
         async for payload in self.protocol:
             for room_id, raw_message in self.decode_payload(payload):
                 yield room_id, raw_message
+
+    async def send_raw_message(self, raw_message):
+        await self.protocol.send(json.dumps([raw_message]))

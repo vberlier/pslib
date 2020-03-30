@@ -2,6 +2,9 @@ __all__ = ["RoomRegistry", "Room"]
 
 
 from collections import deque
+from contextlib import asynccontextmanager
+
+from .commands import GlobalCommandsMixin
 
 
 class RoomRegistry(dict):
@@ -15,7 +18,7 @@ class RoomRegistry(dict):
         return room
 
 
-class Room:
+class Room(GlobalCommandsMixin):
     def __init__(self, client, room_id, *, maxlogs=None):
         self.client = client
         self.id = room_id
@@ -34,3 +37,18 @@ class Room:
         async for message in self.client.received_messages.listen(message_cls):
             if all_rooms or message.room == self:
                 yield message
+
+    @asynccontextmanager
+    async def send_message(self, message_text):
+        async with self.client.sent_messages.append(f"{self.id}|{message_text}"):
+            yield
+
+    @asynccontextmanager
+    async def send_command(self, command_name, *command_args):
+        text = f"/{command_name}"
+
+        if command_args:
+            text += " " + ", ".join(command_args)
+
+        async with self.send_message(text):
+            yield
