@@ -44,11 +44,11 @@ class Room(GlobalCommandsMixin):
             yield
 
     @asynccontextmanager
-    async def send_command(self, command_name, *command_args):
+    async def send_command(self, command_name, *command_params):
         text = f"/{command_name}"
 
-        if command_args:
-            text += " " + ", ".join(command_args)
+        if command_params:
+            text += " " + ",".join(map(str, command_params))
 
         async with self.send_message(text):
             yield
