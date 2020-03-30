@@ -106,9 +106,9 @@ class Message:
 
         return (func(param) for param, func in zip(params, transformers))
 
-    def set_room(self, room):
+    async def set_room(self, room):
         self.room = room
-        room._handle_message(self)
+        await room._handle_message(self)
 
     def serialize(self):
         return f"|{self.type}|{self.value}"
