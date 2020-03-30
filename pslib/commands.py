@@ -2,7 +2,12 @@ __all__ = ["GlobalCommandsMixin"]
 
 
 from .messages import UpdateUserMessage, PrivateMessage, QueryResponseMessage
-from .errors import ServerLoginFailed, PrivateMessageError
+from .errors import (
+    ServerLoginFailed,
+    PrivateMessageError,
+    InvalidRoomId,
+    JoiningRoomFailed,
+)
 from .utils import into_id
 
 
@@ -64,3 +69,18 @@ class GlobalCommandsMixin:
                         self.client.rooms[battle_id]
                         for battle_id in response.result["rooms"]
                     ]
+
+    async def join(self, room_id=None):
+        if room_id is None:
+            room_id = self.id
+
+        if not room_id:
+            raise InvalidRoomId("Expected valid room id")
+
+        room = self.client.rooms[room_id]
+
+        async with self.client.send_command("join", room_id):
+            if not await room.state.joined:
+                raise JoiningRoomFailed(f"Couldn't join room {room_id}")
+
+        return room

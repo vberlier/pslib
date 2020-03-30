@@ -5,7 +5,13 @@ from collections import deque
 from dataclasses import dataclass
 import asyncio
 
-from .messages import UpdateUserMessage, ChallstrMessage
+from .messages import (
+    UpdateUserMessage,
+    ChallstrMessage,
+    InitMessage,
+    TitleMessage,
+    UsersMessage,
+)
 from .utils import AsyncAttribute
 
 
@@ -13,8 +19,26 @@ class RoomState:
     def __init__(self, *, maxlogs=None):
         self.logs = deque(maxlen=maxlogs)
 
+        self.roomtype = AsyncAttribute()
+        self.title = AsyncAttribute()
+        self.userlist = AsyncAttribute()
+
     async def handle_message(self, message):
         self.logs.append(message)
+
+        if isinstance(message, InitMessage):
+            self.roomtype.set(message.roomtype)
+
+        elif isinstance(message, TitleMessage):
+            self.title.set(message.title)
+
+        elif isinstance(message, UsersMessage):
+            self.userlist.set(message.userlist)
+
+    @property
+    async def joined(self):
+        await asyncio.gather(self.roomtype, self.title, self.userlist)
+        return True
 
 
 class ClientState(RoomState):
