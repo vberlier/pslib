@@ -25,9 +25,6 @@ class Room(GlobalCommandsMixin):
         self.id = room_id
         self.state = state
 
-    def __eq__(self, other):
-        return type(self) == type(other) and self.id == other.id
-
     async def handle_message(self, message):
         await self.state.handle_message(message)
 
@@ -36,7 +33,7 @@ class Room(GlobalCommandsMixin):
 
     async def listen(self, message_cls=None, *, all_rooms=False):
         async for message in self.client.received_messages.listen(message_cls):
-            if all_rooms or message.room == self:
+            if all_rooms or message.room is self:
                 yield message
 
     @asynccontextmanager
