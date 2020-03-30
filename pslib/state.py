@@ -5,7 +5,7 @@ from collections import deque
 from dataclasses import dataclass
 import asyncio
 
-from .messages import UpdateUserMessage
+from .messages import UpdateUserMessage, ChallstrMessage
 
 
 class RoomState:
@@ -29,6 +29,7 @@ class ClientState(RoomState):
         super().__init__(*args, **kwargs)
 
         self.user = asyncio.Future()
+        self.challstr = asyncio.Future()
 
     async def handle_message(self, message):
         await super().handle_message(message)
@@ -46,3 +47,9 @@ class ClientState(RoomState):
                     message.settings,
                 )
             )
+
+        elif isinstance(message, ChallstrMessage):
+            if self.challstr.done():
+                self.challstr = asyncio.Future()
+
+            self.challstr.set_result(message.challstr)
