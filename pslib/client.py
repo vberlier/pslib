@@ -1,4 +1,4 @@
-__all__ = ["Client"]
+__all__ = ["connect", "Client"]
 
 
 from contextlib import asynccontextmanager
@@ -8,6 +8,12 @@ from .messages import InboundMessageManager, OutboundMessageManager, parse_messa
 from .rooms import RoomRegistry, Room
 from .state import ClientState
 from .utils import concurrent_tasks
+
+
+@asynccontextmanager
+async def connect(server="showdown", *, host=None, uri=None, sticky=True):
+    async with Client.connect(server, host=host, uri=uri, sticky=sticky) as client:
+        yield client
 
 
 class Client(Room):
