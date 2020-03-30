@@ -98,7 +98,7 @@ class Message:
         pass
 
     def unpack(self, *transformers):
-        params = self.value.split("|", len(transformers))
+        params = self.value.split("|", len(transformers) - 1)
 
         if len(params) != len(transformers):
             raise InvalidMessageParameters(f"Expected {len(transformers)} parameters")
