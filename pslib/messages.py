@@ -23,7 +23,7 @@ from dataclasses import dataclass
 import asyncio
 
 from .errors import InvalidMessageParameters
-from .utils import compose
+from .utils import compose, into_id
 
 
 MESSAGE_CLASS_REGISTRY = {}
@@ -123,14 +123,9 @@ class PlainTextMessage(Message, match=[""]):
 
 class UpdateUserMessage(Message, match=["updateuser"]):
     def hydrate(self):
-        self.username, self.named, self.avatar, self.settings = self.unpack(
-            compose(str.strip, str), compose(bool, int), int, json.loads
+        self.userid, self.named, self.avatar, self.settings = self.unpack(
+            into_id, compose(bool, int), int, json.loads
         )
-
-        self.busy = self.username.endswith("@!")
-
-        if self.busy:
-            self.username = self.username[:-2]
 
 
 class ChallstrMessage(Message, match=["challstr"]):
@@ -140,9 +135,7 @@ class ChallstrMessage(Message, match=["challstr"]):
 
 class PrivateMessage(Message, match=["pm"]):
     def hydrate(self):
-        self.sender, self.receiver, self.content = self.unpack(
-            compose(str.strip, str), compose(str.strip, str), str
-        )
+        self.sender, self.receiver, self.content = self.unpack(into_id, into_id, str)
 
 
 class QueryResponseMessage(Message, match=["queryresponse"]):

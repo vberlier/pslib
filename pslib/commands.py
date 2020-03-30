@@ -8,10 +8,12 @@ from .utils import into_id
 
 class GlobalCommandsMixin:
     async def login(self, username, password=None, *, server_id=None):
+        userid = into_id(username)
+
         data = (
             {
                 "act": "getassertion",
-                "userid": into_id(username),
+                "userid": userid,
                 "challstr": await self.client.state.challstr,
             }
             if password is None
@@ -36,7 +38,7 @@ class GlobalCommandsMixin:
 
         async with self.client.send_command("trn", username, 0, assertion):
             async for message in self.client.listen(UpdateUserMessage):
-                if message.username == username:
+                if message.userid == userid:
                     break
 
     async def query_battles(self, format="", minimum_elo=None, username_prefix=""):

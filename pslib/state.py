@@ -19,8 +19,7 @@ class RoomState:
 class ClientState(RoomState):
     @dataclass
     class UserInfo:
-        username: str
-        busy: bool
+        userid: str
         named: bool
         avatar: int
         settings: dict
@@ -40,11 +39,7 @@ class ClientState(RoomState):
 
             self.user.set_result(
                 ClientState.UserInfo(
-                    message.username,
-                    message.busy,
-                    message.named,
-                    message.avatar,
-                    message.settings,
+                    message.userid, message.named, message.avatar, message.settings,
                 )
             )
 

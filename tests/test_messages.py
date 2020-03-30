@@ -35,7 +35,7 @@ def test_update_user():
     )
 
     assert isinstance(message, UpdateUserMessage)
-    assert message.username == "Guest 3642588"
+    assert message.userid == "guest3642588"
     assert message.named == False
     assert message.avatar == 102
     assert message.settings == {
