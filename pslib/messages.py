@@ -125,6 +125,11 @@ class UpdateUserMessage(Message, match=["updateuser"]):
             str, compose(bool, int), int, json.loads
         )
 
+        self.busy = self.user.endswith("@!")
+
+        if self.busy:
+            self.user = self.user[:-2]
+
 
 class ChallstrMessage(Message, match=["challstr"]):
     def hydrate(self):
