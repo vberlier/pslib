@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 
-from pslib import connect, ServerConnectionFailed, PrivateMessage
+from pslib import connect, ServerConnectionFailed, UpdateUserMessage
 
 
 pytestmark = pytest.mark.asyncio
@@ -28,26 +28,29 @@ async def test_connect():
 
 
 async def test_connect_host():
-    async with connect(host="sim.smogon.com:8000"):
-        pass
+    async with connect(host="sim.smogon.com:8000") as client:
+        async for message in client.listen(UpdateUserMessage):
+            assert message.userid.startswith("guest")
+            break
 
 
-@pytest.mark.skip
 async def test_connect_uri():
     uri = "ws://sim.smogon.com:8000/showdown/123/abcdefgh/websocket"
-    async with connect(uri=uri):
-        pass
+    async with connect(uri=uri) as client:
+        async for message in client.listen(UpdateUserMessage):
+            assert message.userid.startswith("guest")
+            break
 
 
-@pytest.mark.skip
 async def test_connect_nonsticky_uri():
     with pytest.raises(ServerConnectionFailed):
         async with connect(uri="ws://sim.smogon.com:8000/showdown/websocket"):
             pass
 
 
-@pytest.mark.skip
 async def test_connect_nonsticky_uri_correct():
     uri = "ws://sim.smogon.com:8000/showdown/websocket"
-    async with connect(uri=uri, sticky=False):
-        pass
+    async with connect(uri=uri, sticky=False) as client:
+        async for message in client.listen(UpdateUserMessage):
+            assert message.userid.startswith("guest")
+            break
