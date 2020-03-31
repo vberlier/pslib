@@ -69,18 +69,22 @@ class InboundMessageManager:
 
 
 class OutboundMessageManager:
-    def __init__(self):
+    def __init__(self, messages_per_second=20):
         self.queue = asyncio.Queue()
+        self.delay = 1 / messages_per_second
 
     async def collect(self):
         while entry := await self.queue.get():
             raw_message, waiting = entry
 
+            done = asyncio.Future()
+            waiting.set_result(done)
+
+            await asyncio.sleep(self.delay)
+
             try:
                 yield raw_message
             finally:
-                done = asyncio.Future()
-                waiting.set_result(done)
                 await done
 
     @asynccontextmanager
