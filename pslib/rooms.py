@@ -2,6 +2,7 @@ __all__ = ["RoomRegistry", "Room"]
 
 
 from contextlib import asynccontextmanager
+from weakref import WeakValueDictionary
 
 from .commands import GlobalCommandsMixin
 from .errors import ReceivedErrorMessage
@@ -14,10 +15,19 @@ class RoomRegistry(dict):
     def __init__(self, client, *, maxlogs=None):
         self.client = client
         self.maxlogs = maxlogs
+        self.temporary_rooms = WeakValueDictionary()
+
+    def __setitem__(self, room_id, room):
+        super().__setitem__(room_id, room)
+        if room_id in self.temporary_rooms:
+            del self.temporary_rooms[room_id]
 
     def __missing__(self, room_id):
+        if room := self.temporary_rooms.get(room_id):
+            return room
+
         room = Room(self.client, room_id, RoomState(maxlogs=self.maxlogs))
-        self[room_id] = room
+        self.temporary_rooms[room_id] = room
         return room
 
 
@@ -30,10 +40,13 @@ class Room(GlobalCommandsMixin):
     async def handle_message(self, message):
         await self.state.handle_message(message)
 
+    def handle_join(self):
+        self.client.rooms[self.id] = self
+
     def handle_leave(self):
         self.state = type(self.state)(maxlogs=self.state.maxlogs)
 
-        if self.id:
+        if self.id in self.client.rooms:
             del self.client.rooms[self.id]
 
     @property

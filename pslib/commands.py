@@ -85,6 +85,7 @@ class GlobalCommandsMixin:
             if not await room.state.joined:
                 room.handle_leave()
                 raise JoiningRoomFailed(f"Couldn't join room {room_id}")
+            room.handle_join()
             return room
 
     async def leave(self, room_id=None):
