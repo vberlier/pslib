@@ -4,7 +4,8 @@ __all__ = ["connect", "Client"]
 from contextlib import asynccontextmanager
 
 from .network import HttpContext, WebsocketContext
-from .messages import InboundMessageManager, OutboundMessageManager, parse_message
+from .message_managers import InboundMessageManager, OutboundMessageManager
+from .messages import parse_message
 from .rooms import RoomRegistry, Room
 from .state import ClientState
 from .utils import concurrent_tasks
