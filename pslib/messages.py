@@ -206,7 +206,7 @@ class BattleMessage(Message, match=["battle", "b", "B"]):
 
 class WinMessage(Message, match=["win"]):
     def hydrate(self):
-        self.user_id = self.unpack(str)
+        self.userid = self.unpack(into_id)
 
 
 class RawMessage(Message, match=["raw"]):
