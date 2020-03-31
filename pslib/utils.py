@@ -1,4 +1,4 @@
-__all__ = ["compose", "concurrent_tasks", "into_id", "AsyncAttribute"]
+__all__ = ["compose", "concurrent_tasks", "into_id", "AsyncAttribute", "race_against"]
 
 
 import re
@@ -47,3 +47,27 @@ class AsyncAttribute:
             self.future = asyncio.Future()
 
         self.future.set_result(value)
+
+
+@asynccontextmanager
+async def race_against(coroutine):
+    task = asyncio.current_task()
+    coroutine_task = asyncio.create_task(coroutine)
+
+    async def race():
+        try:
+            await coroutine_task
+        except:
+            pass
+
+        task.cancel()
+
+    try:
+        async with concurrent_tasks(race()):
+            yield
+    except asyncio.CancelledError:
+        if not coroutine_task.done():
+            raise
+
+        if exc := coroutine_task.exception():
+            raise exc from None
