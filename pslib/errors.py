@@ -9,7 +9,6 @@ __all__ = [
     "PrivateMessageError",
     "InvalidRoomId",
     "JoiningRoomFailed",
-    "LeavingRoomFailed",
     "ServerResponseTimeout",
     "ReceivedErrorMessage",
 ]
@@ -52,10 +51,6 @@ class InvalidRoomId(PslibError):
 
 
 class JoiningRoomFailed(PslibError):
-    pass
-
-
-class LeavingRoomFailed(PslibError):
     pass
 
 
