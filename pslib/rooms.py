@@ -42,7 +42,7 @@ class Room(GlobalCommandsMixin):
 
     async def listen(self, *message_types, all_rooms=False):
         async for message in self.client.received_messages.listen(*message_types):
-            if all_rooms or message.room is self:
+            if all_rooms or message.room.id == self.id:
                 yield message
 
     async def expect(self, *message_types, all_rooms=False, **attrs):
