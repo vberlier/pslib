@@ -11,6 +11,7 @@ __all__ = [
     "PrivateMessage",
     "QueryResponseMessage",
     "InitMessage",
+    "NoInitMessage",
     "TitleMessage",
     "UsersMessage",
     "DeinitMessage",
@@ -163,6 +164,11 @@ class QueryResponseMessage(Message, match=["queryresponse"]):
 class InitMessage(Message, match=["init"]):
     def hydrate(self):
         self.roomtype = self.unpack(str)
+
+
+class NoInitMessage(Message, match=["noinit"]):
+    def hydrate(self):
+        self.error, self.details = self.unpack(str, str)
 
 
 class TitleMessage(Message, match=["title"]):

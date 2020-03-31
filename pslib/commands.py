@@ -84,6 +84,7 @@ class GlobalCommandsMixin:
 
         async with self.client.send_command("join", room_id):
             if not await room.state.joined:
+                room.reset_state()
                 raise JoiningRoomFailed(f"Couldn't join room {room_id}")
             return room
 

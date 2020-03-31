@@ -9,6 +9,7 @@ from .messages import (
     UpdateUserMessage,
     ChallstrMessage,
     InitMessage,
+    NoInitMessage,
     TitleMessage,
     UsersMessage,
     DeinitMessage,
@@ -21,6 +22,7 @@ class RoomState:
         self.maxlogs = maxlogs
         self.logs = deque(maxlen=maxlogs)
 
+        self.joined = AsyncAttribute()
         self.roomtype = AsyncAttribute()
         self.title = AsyncAttribute()
         self.userlist = AsyncAttribute()
@@ -29,18 +31,17 @@ class RoomState:
         self.logs.append(message)
 
         if isinstance(message, InitMessage):
+            self.joined.set(True)
             self.roomtype.set(message.roomtype)
+
+        elif isinstance(message, NoInitMessage):
+            self.joined.set(False)
 
         elif isinstance(message, TitleMessage):
             self.title.set(message.title)
 
         elif isinstance(message, UsersMessage):
             self.userlist.set(message.userlist)
-
-    @property
-    async def joined(self):
-        await asyncio.gather(self.roomtype, self.title, self.userlist)
-        return True
 
 
 class ClientState(RoomState):
