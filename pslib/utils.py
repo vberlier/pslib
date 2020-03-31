@@ -31,11 +31,6 @@ async def concurrent_tasks(*coroutines):
                 pass
 
 
-async def cancel_after_timeout(task, timeout):
-    await asyncio.sleep(timeout)
-    task.cancel()
-
-
 def into_id(string):
     return re.sub(r"(\W|_)", "", string.lower())
 

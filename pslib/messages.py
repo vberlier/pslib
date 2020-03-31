@@ -28,6 +28,7 @@ __all__ = [
 
 
 import json
+from types import SimpleNamespace
 from contextlib import asynccontextmanager
 from weakref import WeakKeyDictionary
 from dataclasses import dataclass
@@ -86,18 +87,25 @@ class OutboundMessageManager:
             finally:
                 await done
 
+    async def _cancel_after_timeout(self, ctx):
+        await asyncio.sleep(self.response_timeout)
+        ctx.timed_out = True
+        ctx.task.cancel()
+
     @asynccontextmanager
     async def append(self, raw_message):
         waiting = asyncio.Future()
         self.queue.put_nowait((raw_message, waiting))
         done = await waiting
 
+        ctx = SimpleNamespace(task=asyncio.current_task(), timed_out=False)
+
         try:
-            async with concurrent_tasks(
-                cancel_after_timeout(asyncio.current_task(), self.response_timeout)
-            ):
+            async with concurrent_tasks(self._cancel_after_timeout(ctx)):
                 yield
         except asyncio.CancelledError:
+            if not ctx.timed_out:
+                raise
             raise ServerResponseTimeout("Server took too long to respond") from None
         finally:
             done.set_result(None)
