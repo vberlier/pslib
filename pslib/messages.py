@@ -33,8 +33,8 @@ from weakref import WeakKeyDictionary
 from dataclasses import dataclass
 import asyncio
 
-from .errors import InvalidMessageParameters
-from .utils import compose, into_id
+from .errors import InvalidMessageParameters, ServerResponseTimeout
+from .utils import compose, into_id, concurrent_tasks, cancel_after_timeout
 
 
 MESSAGE_CLASS_REGISTRY = {}
@@ -67,9 +67,10 @@ class InboundMessageManager:
 
 
 class OutboundMessageManager:
-    def __init__(self, messages_per_second=20):
+    def __init__(self, *, messages_per_second=20, response_timeout=5):
         self.queue = asyncio.Queue()
         self.delay = 1 / messages_per_second
+        self.response_timeout = response_timeout
 
     async def collect(self):
         while entry := await self.queue.get():
@@ -92,7 +93,12 @@ class OutboundMessageManager:
         done = await waiting
 
         try:
-            yield
+            async with concurrent_tasks(
+                cancel_after_timeout(asyncio.current_task(), self.response_timeout)
+            ):
+                yield
+        except asyncio.CancelledError:
+            raise ServerResponseTimeout("Server took too long to respond") from None
         finally:
             done.set_result(None)
 

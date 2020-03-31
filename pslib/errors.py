@@ -10,6 +10,7 @@ __all__ = [
     "InvalidRoomId",
     "JoiningRoomFailed",
     "LeavingRoomFailed",
+    "ServerResponseTimeout",
 ]
 
 
@@ -54,4 +55,8 @@ class JoiningRoomFailed(PslibError):
 
 
 class LeavingRoomFailed(PslibError):
+    pass
+
+
+class ServerResponseTimeout(PslibError):
     pass
