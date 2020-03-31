@@ -33,7 +33,8 @@ class Room(GlobalCommandsMixin):
     def reset_state(self):
         self.state = type(self.state)(maxlogs=self.state.maxlogs)
 
-    def serialize_logs(self):
+    @property
+    def logs(self):
         return "\n".join(message.serialize() or "|" for message in self.state.logs)
 
     async def listen(self, *message_types, all_rooms=False):
