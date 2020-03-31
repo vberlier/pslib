@@ -87,7 +87,7 @@ class GlobalCommandsMixin:
     async def join(self, room_id=None):
         room, room_id = _check_room_param(self, room_id)
 
-        if room.already_joined:
+        if room.joined:
             raise AlreadyJoinedRoom(room_id)
 
         async with self.client.check_command("join", room_id):
@@ -100,7 +100,7 @@ class GlobalCommandsMixin:
     async def leave(self, room_id=None):
         room, room_id = _check_room_param(self, room_id)
 
-        if room.already_left:
+        if not room.joined:
             raise AlreadyLeftRoom(room_id)
 
         async with self.client.check_command("leave", room_id):
