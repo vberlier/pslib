@@ -1,7 +1,13 @@
 import pytest
 import asyncio
 
-from pslib import connect, ServerConnectionFailed, UpdateUserMessage
+from pslib import (
+    connect,
+    ServerConnectionFailed,
+    AlreadyJoinedRoom,
+    AlreadyLeftRoom,
+    UpdateUserMessage,
+)
 
 
 pytestmark = pytest.mark.asyncio
@@ -54,3 +60,16 @@ async def test_connect_nonsticky_uri_correct():
         async for message in client.listen(UpdateUserMessage):
             assert message.userid.startswith("guest")
             break
+
+
+async def test_double_join(client):
+    with pytest.raises(AlreadyJoinedRoom):
+        await client.join("lobby")
+        await client.join("lobby")
+
+
+async def test_double_leave(client):
+    with pytest.raises(AlreadyLeftRoom):
+        await client.join("lobby")
+        await client.leave("lobby")
+        await client.leave("lobby")
