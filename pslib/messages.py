@@ -12,6 +12,13 @@ __all__ = [
     "InitMessage",
     "TitleMessage",
     "UsersMessage",
+    "ChatMessage",
+    "TimestampChatMessage",
+    "TimestampMessage",
+    "JoinMessage",
+    "LeaveMessage",
+    "NameMessage",
+    "BattleMessage",
     "WinMessage",
     "RawMessage",
 ]
@@ -159,6 +166,42 @@ class TitleMessage(Message, match=["title"]):
 class UsersMessage(Message, match=["users"]):
     def hydrate(self):
         self.userlist = list(map(into_id, self.unpack(str).split(",")))
+
+
+class ChatMessage(Message, match=["chat", "c"]):
+    def hydrate(self):
+        self.sender, self.content = self.unpack(into_id, str)
+
+
+class TimestampChatMessage(ChatMessage, match=["c:"]):
+    def hydrate(self):
+        self.timestamp, self.sender, self.content = self.unpack(int, into_id, str)
+
+
+class TimestampMessage(Message, match=[":"]):
+    def hydrate(self):
+        self.timestamp = self.unpack(int)
+
+
+class JoinMessage(Message, match=["join", "j", "J"]):
+    def hydrate(self):
+        self.joined = self.unpack(into_id)
+
+
+class LeaveMessage(Message, match=["leave", "l", "L"]):
+    def hydrate(self):
+        self.left = self.unpack(into_id)
+
+
+class NameMessage(Message, match=["name", "n", "N"]):
+    def hydrate(self):
+        self.new_userid, self.old_userid = self.unpack(into_id, into_id)
+
+
+class BattleMessage(Message, match=["battle", "b", "B"]):
+    def hydrate(self):
+        battle_id, self.p1, self.p2 = self.unpack(str, into_id, into_id)
+        self.battle = self.room.client.rooms[battle_id]
 
 
 class WinMessage(Message, match=["win"]):
