@@ -30,8 +30,11 @@ class Room(GlobalCommandsMixin):
     async def handle_message(self, message):
         await self.state.handle_message(message)
 
-    def reset_state(self):
+    def handle_leave(self):
         self.state = type(self.state)(maxlogs=self.state.maxlogs)
+
+        if self.id:
+            del self.client.rooms[self.id]
 
     @property
     def logs(self):
