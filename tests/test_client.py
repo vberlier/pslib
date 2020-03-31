@@ -4,6 +4,7 @@ import asyncio
 from pslib import (
     connect,
     ServerConnectionFailed,
+    JoiningRoomFailed,
     AlreadyJoinedRoom,
     AlreadyLeftRoom,
     UpdateUserMessage,
@@ -72,4 +73,14 @@ async def test_double_leave(client):
     with pytest.raises(AlreadyLeftRoom):
         await client.join("lobby")
         await client.leave("lobby")
+        await client.leave("lobby")
+
+
+async def test_join_inexistant(client):
+    with pytest.raises(JoiningRoomFailed):
+        await client.join("aljfbeauifbix")
+
+
+async def test_leave_not_joined(client):
+    with pytest.raises(AlreadyLeftRoom):
         await client.leave("lobby")
