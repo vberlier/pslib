@@ -34,8 +34,8 @@ class Room(GlobalCommandsMixin):
     def serialize_logs(self):
         return "\n".join(message.serialize() or "|" for message in self.state.logs)
 
-    async def listen(self, message_cls=None, *, all_rooms=False):
-        async for message in self.client.received_messages.listen(message_cls):
+    async def listen(self, *message_types, all_rooms=False):
+        async for message in self.client.received_messages.listen(*message_types):
             if all_rooms or message.room is self:
                 yield message
 

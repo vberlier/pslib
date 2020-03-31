@@ -26,10 +26,8 @@ __all__ = [
 
 
 import json
-import itertools
 from contextlib import asynccontextmanager
-from collections import defaultdict
-from weakref import WeakSet
+from weakref import WeakKeyDictionary
 from dataclasses import dataclass
 import asyncio
 
@@ -51,18 +49,16 @@ def parse_message(raw_message):
 
 class InboundMessageManager:
     def __init__(self):
-        self.listeners = defaultdict(WeakSet)
+        self.listeners = WeakKeyDictionary()
 
     def dispatch(self, message):
-        generic = self.listeners[None]
-        specific = self.listeners[type(message)]
+        for queue, message_types in self.listeners.items():
+            if not message_types or isinstance(message, message_types):
+                queue.put_nowait(message)
 
-        for listener in itertools.chain(generic, specific):
-            listener.put_nowait(message)
-
-    async def listen(self, message_cls=None):
+    async def listen(self, *message_types):
         queue = asyncio.Queue()
-        self.listeners[message_cls].add(queue)
+        self.listeners[queue] = message_types
 
         while message := await queue.get():
             yield message
