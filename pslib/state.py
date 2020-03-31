@@ -11,17 +11,20 @@ from .messages import (
     InitMessage,
     TitleMessage,
     UsersMessage,
+    DeinitMessage,
 )
 from .utils import AsyncAttribute
 
 
 class RoomState:
     def __init__(self, *, maxlogs=None):
+        self.maxlogs = maxlogs
         self.logs = deque(maxlen=maxlogs)
 
         self.roomtype = AsyncAttribute()
         self.title = AsyncAttribute()
         self.userlist = AsyncAttribute()
+        self.left = AsyncAttribute()
 
     async def handle_message(self, message):
         self.logs.append(message)
@@ -34,6 +37,9 @@ class RoomState:
 
         elif isinstance(message, UsersMessage):
             self.userlist.set(message.userlist)
+
+        elif isinstance(message, DeinitMessage):
+            self.left.set(True)
 
     @property
     async def joined(self):

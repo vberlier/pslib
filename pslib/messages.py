@@ -12,6 +12,7 @@ __all__ = [
     "InitMessage",
     "TitleMessage",
     "UsersMessage",
+    "DeinitMessage",
     "ChatMessage",
     "TimestampChatMessage",
     "TimestampMessage",
@@ -166,6 +167,10 @@ class TitleMessage(Message, match=["title"]):
 class UsersMessage(Message, match=["users"]):
     def hydrate(self):
         self.userlist = list(map(into_id, self.unpack(str).split(",")))
+
+
+class DeinitMessage(Message, match=["deinit"]):
+    pass
 
 
 class ChatMessage(Message, match=["chat", "c"]):

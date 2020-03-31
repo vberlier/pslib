@@ -28,6 +28,9 @@ class Room(GlobalCommandsMixin):
     async def handle_message(self, message):
         await self.state.handle_message(message)
 
+    def reset_state(self):
+        self.state = type(self.state)(maxlogs=self.state.maxlogs)
+
     def serialize_logs(self):
         return "\n".join(message.serialize() or "|" for message in self.state.logs)
 

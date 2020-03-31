@@ -7,6 +7,7 @@ from .errors import (
     PrivateMessageError,
     InvalidRoomId,
     JoiningRoomFailed,
+    LeavingRoomFailed,
 )
 from .utils import into_id
 
@@ -84,3 +85,17 @@ class GlobalCommandsMixin:
                 raise JoiningRoomFailed(f"Couldn't join room {room_id}")
 
         return room
+
+    async def leave(self, room_id=None):
+        if room_id is None:
+            room_id = self.id
+
+        if not room_id:
+            raise InvalidRoomId("Expected valid room id")
+
+        room = self.client.rooms[room_id]
+
+        async with self.client.send_command("leave", room_id):
+            if not await room.state.left:
+                raise LeavingRoomFailed(f"Couldn't leave room {room_id}")
+            room.reset_state()

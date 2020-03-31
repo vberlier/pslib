@@ -8,6 +8,8 @@ __all__ = [
     "ServerLoginFailed",
     "PrivateMessageError",
     "InvalidRoomId",
+    "JoiningRoomFailed",
+    "LeavingRoomFailed",
 ]
 
 
@@ -48,4 +50,8 @@ class InvalidRoomId(PslibError):
 
 
 class JoiningRoomFailed(PslibError):
+    pass
+
+
+class LeavingRoomFailed(PslibError):
     pass
