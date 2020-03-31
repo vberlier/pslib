@@ -71,17 +71,17 @@ class Room(GlobalCommandsMixin):
         raise ReceivedErrorMessage(message.error)
 
     @asynccontextmanager
-    async def send_message(self, message_text):
+    async def check_message(self, message_text):
         async with self.client.sent_messages.append(f"{self.id}|{message_text}"):
             async with race_against(self._raise_error_message()):
                 yield
 
     @asynccontextmanager
-    async def send_command(self, command_name, *command_params):
+    async def check_command(self, command_name, *command_params):
         text = f"/{command_name}"
 
         if command_params:
             text += " " + ",".join(map(str, command_params))
 
-        async with self.send_message(text):
+        async with self.check_message(text):
             yield

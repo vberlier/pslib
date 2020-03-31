@@ -56,20 +56,20 @@ class GlobalCommandsMixin:
                 raise ServerLoginFailed("Invalid credentials")
             assertion = response["assertion"]
 
-        async with self.client.send_command("trn", username, 0, assertion):
+        async with self.client.check_command("trn", username, 0, assertion):
             await self.client.expect(UpdateUserMessage, userid=userid)
 
     async def private_message(self, receiver, content):
         receiver = into_id(receiver)
 
-        async with self.client.send_command("pm", receiver, content):
+        async with self.client.check_command("pm", receiver, content):
             message = await self.client.expect(PrivateMessage, receiver=receiver)
 
             if message.content.startswith("/error"):
                 raise PrivateMessageError(message.content[7:])
 
     async def query_battles(self, format="", minimum_elo=None, username_prefix=""):
-        async with self.client.send_command(
+        async with self.client.check_command(
             "cmd roomlist",
             format,
             "none" if minimum_elo is None else minimum_elo,
@@ -85,7 +85,7 @@ class GlobalCommandsMixin:
     async def join(self, room_id=None):
         room, room_id = _check_room_param(self, room_id)
 
-        async with self.client.send_command("join", room_id):
+        async with self.client.check_command("join", room_id):
             if not await room.state.joined:
                 room.handle_leave()
                 raise JoiningRoomFailed(f"Couldn't join room {room_id}")
@@ -95,6 +95,6 @@ class GlobalCommandsMixin:
     async def leave(self, room_id=None):
         room, room_id = _check_room_param(self, room_id)
 
-        async with self.client.send_command("leave", room_id):
+        async with self.client.check_command("leave", room_id):
             await room.expect(DeinitMessage)
             room.handle_leave()
