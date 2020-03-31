@@ -35,7 +35,7 @@ from dataclasses import dataclass
 import asyncio
 
 from .errors import InvalidMessageParameters, ServerResponseTimeout
-from .utils import compose, into_id, concurrent_tasks, cancel_after_timeout
+from .utils import compose, into_id, concurrent_tasks
 
 
 MESSAGE_CLASS_REGISTRY = {}
