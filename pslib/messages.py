@@ -5,6 +5,7 @@ __all__ = [
     "Message",
     "UnrecognizedMessage",
     "PlainTextMessage",
+    "ErrorMessage",
     "UpdateUserMessage",
     "ChallstrMessage",
     "PrivateMessage",
@@ -130,6 +131,11 @@ class UnrecognizedMessage(Message):
 class PlainTextMessage(Message, match=[""]):
     def serialize(self):
         return self.value
+
+
+class ErrorMessage(Message, match=["error"]):
+    def hydrate(self):
+        self.error = self.unpack(str)
 
 
 class UpdateUserMessage(Message, match=["updateuser"]):
