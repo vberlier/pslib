@@ -1,7 +1,6 @@
 __all__ = ["RoomRegistry", "Room"]
 
 
-from collections import deque
 from contextlib import asynccontextmanager
 
 from .commands import GlobalCommandsMixin
@@ -38,6 +37,14 @@ class Room(GlobalCommandsMixin):
         async for message in self.client.received_messages.listen(*message_types):
             if all_rooms or message.room is self:
                 yield message
+
+    async def expect(self, *message_types, all_rooms=False, **attrs):
+        async for message in self.listen(*message_types, all_rooms=all_rooms):
+            if all(
+                hasattr(message, key) and getattr(message, key) == value
+                for key, value in attrs.items()
+            ):
+                return message
 
     @asynccontextmanager
     async def send_message(self, message_text):

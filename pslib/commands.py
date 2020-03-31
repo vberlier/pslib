@@ -43,19 +43,16 @@ class GlobalCommandsMixin:
             assertion = response["assertion"]
 
         async with self.client.send_command("trn", username, 0, assertion):
-            async for message in self.client.listen(UpdateUserMessage):
-                if message.userid == userid:
-                    break
+            await self.client.expect(UpdateUserMessage, userid=userid)
 
     async def private_message(self, receiver, content):
         receiver = into_id(receiver)
 
         async with self.client.send_command("pm", receiver, content):
-            async for message in self.client.listen(PrivateMessage):
-                if into_id(message.receiver) == receiver:
-                    if message.content.startswith("/error"):
-                        raise PrivateMessageError(message.content[7:])
-                    break
+            message = await self.client.expect(PrivateMessage, receiver=receiver)
+
+            if message.content.startswith("/error"):
+                raise PrivateMessageError(message.content[7:])
 
     async def query_battles(self, format="", minimum_elo=None, username_prefix=""):
         async with self.client.send_command(
@@ -64,12 +61,12 @@ class GlobalCommandsMixin:
             "none" if minimum_elo is None else minimum_elo,
             username_prefix,
         ):
-            async for response in self.client.listen(QueryResponseMessage):
-                if response.querytype == "roomlist":
-                    return [
-                        self.client.rooms[battle_id]
-                        for battle_id in response.result["rooms"]
-                    ]
+            response = await self.client.expect(
+                QueryResponseMessage, querytype="roomlist"
+            )
+            return [
+                self.client.rooms[battle_id] for battle_id in response.result["rooms"]
+            ]
 
     async def join(self, room_id=None):
         if room_id is None:
