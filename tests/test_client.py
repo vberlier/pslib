@@ -5,8 +5,7 @@ from pslib import (
     connect,
     ServerConnectionFailed,
     JoiningRoomFailed,
-    AlreadyJoinedRoom,
-    AlreadyLeftRoom,
+    LeavingRoomFailed,
     UpdateUserMessage,
 )
 
@@ -82,13 +81,13 @@ async def test_join_reset_lobby(client):
 
 
 async def test_double_join(client):
-    with pytest.raises(AlreadyJoinedRoom):
+    with pytest.raises(JoiningRoomFailed):
         await client.join("lobby")
         await client.join("lobby")
 
 
 async def test_double_leave(client):
-    with pytest.raises(AlreadyLeftRoom):
+    with pytest.raises(LeavingRoomFailed):
         await client.join("lobby")
         await client.leave("lobby")
         await client.leave("lobby")
@@ -100,5 +99,5 @@ async def test_join_inexistant(client):
 
 
 async def test_leave_not_joined(client):
-    with pytest.raises(AlreadyLeftRoom):
+    with pytest.raises(LeavingRoomFailed):
         await client.leave("lobby")

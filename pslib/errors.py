@@ -9,10 +9,9 @@ __all__ = [
     "PrivateMessageError",
     "InvalidRoomId",
     "JoiningRoomFailed",
+    "LeavingRoomFailed",
     "ServerResponseTimeout",
     "ReceivedErrorMessage",
-    "AlreadyJoinedRoom",
-    "AlreadyLeftRoom",
 ]
 
 
@@ -56,17 +55,13 @@ class JoiningRoomFailed(PslibError):
     pass
 
 
+class LeavingRoomFailed(PslibError):
+    pass
+
+
 class ServerResponseTimeout(PslibError):
     pass
 
 
 class ReceivedErrorMessage(PslibError):
-    pass
-
-
-class AlreadyJoinedRoom(PslibError):
-    pass
-
-
-class AlreadyLeftRoom(PslibError):
     pass

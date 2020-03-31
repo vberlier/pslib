@@ -12,8 +12,7 @@ from .errors import (
     PrivateMessageError,
     InvalidRoomId,
     JoiningRoomFailed,
-    AlreadyJoinedRoom,
-    AlreadyLeftRoom,
+    LeavingRoomFailed,
 )
 from .utils import into_id
 
@@ -88,7 +87,7 @@ class GlobalCommandsMixin:
         room, room_id = _check_room_param(self, room_id)
 
         if room.joined:
-            raise AlreadyJoinedRoom(room_id)
+            raise JoiningRoomFailed(f"Already joined {room_id}")
 
         async with self.client.check_command("join", room_id):
             if not await room.state.joined:
@@ -101,7 +100,7 @@ class GlobalCommandsMixin:
         room, room_id = _check_room_param(self, room_id)
 
         if not room.joined:
-            raise AlreadyLeftRoom(room_id)
+            raise LeavingRoomFailed(f"Already left {room_id}")
 
         async with self.client.check_command("leave", room_id):
             await room.expect(DeinitMessage)
