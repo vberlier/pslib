@@ -24,7 +24,6 @@ class RoomState:
         self.roomtype = AsyncAttribute()
         self.title = AsyncAttribute()
         self.userlist = AsyncAttribute()
-        self.left = AsyncAttribute()
 
     async def handle_message(self, message):
         self.logs.append(message)
@@ -37,9 +36,6 @@ class RoomState:
 
         elif isinstance(message, UsersMessage):
             self.userlist.set(message.userlist)
-
-        elif isinstance(message, DeinitMessage):
-            self.left.set(True)
 
     @property
     async def joined(self):

@@ -1,7 +1,12 @@
 __all__ = ["GlobalCommandsMixin"]
 
 
-from .messages import UpdateUserMessage, PrivateMessage, QueryResponseMessage
+from .messages import (
+    UpdateUserMessage,
+    PrivateMessage,
+    QueryResponseMessage,
+    DeinitMessage,
+)
 from .errors import (
     ServerLoginFailed,
     PrivateMessageError,
@@ -92,6 +97,5 @@ class GlobalCommandsMixin:
         room = self.client.rooms[room_id]
 
         async with self.client.send_command("leave", room_id):
-            if not await room.state.left:
-                raise LeavingRoomFailed(f"Couldn't leave room {room_id}")
+            await room.expect(DeinitMessage)
             room.reset_state()
