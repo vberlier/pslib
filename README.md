@@ -15,7 +15,10 @@ import pslib
 async def join_battles(client):
     while True:
         for battle in await client.query_battles():
-            await battle.join()
+            try:
+                await battle.join()
+            except pslib.JoiningRoomFailed:
+                pass
 
 async def display_logs(client):
     async for message in client.listen(pslib.WinMessage, all_rooms=True):
