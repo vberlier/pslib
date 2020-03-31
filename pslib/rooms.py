@@ -39,8 +39,8 @@ class Room(GlobalCommandsMixin):
 
         self.joined = False
 
-    async def handle_message(self, message):
-        await self.state.handle_message(message)
+    def handle_message(self, message):
+        self.state.handle_message(message)
 
     def handle_join(self):
         self.joined = True

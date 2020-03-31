@@ -53,7 +53,7 @@ class Client(Room):
             message = parse_message(raw_message)
             message.room = room
 
-            await room.handle_message(message)
+            room.handle_message(message)
 
             self.received_messages.dispatch(message)
 

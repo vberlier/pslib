@@ -27,7 +27,7 @@ class RoomState:
         self.title = AsyncAttribute()
         self.userlist = AsyncAttribute()
 
-    async def handle_message(self, message):
+    def handle_message(self, message):
         self.logs.append(message)
 
         if isinstance(message, InitMessage):
@@ -58,8 +58,8 @@ class ClientState(RoomState):
         self.user = AsyncAttribute()
         self.challstr = AsyncAttribute()
 
-    async def handle_message(self, message):
-        await super().handle_message(message)
+    def handle_message(self, message):
+        super().handle_message(message)
 
         if isinstance(message, UpdateUserMessage):
             self.user.set(
