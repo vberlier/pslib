@@ -28,14 +28,13 @@ __all__ = [
 
 
 import json
-from types import SimpleNamespace
 from contextlib import asynccontextmanager
 from weakref import WeakKeyDictionary
 from dataclasses import dataclass
 import asyncio
 
 from .errors import InvalidMessageParameters, ServerResponseTimeout
-from .utils import compose, into_id, concurrent_tasks
+from .utils import compose, into_id, race_against
 
 
 MESSAGE_CLASS_REGISTRY = {}
@@ -87,10 +86,9 @@ class OutboundMessageManager:
             finally:
                 await done
 
-    async def _cancel_after_timeout(self, ctx):
+    async def _raise_timeout_error(self):
         await asyncio.sleep(self.response_timeout)
-        ctx.timed_out = True
-        ctx.task.cancel()
+        raise ServerResponseTimeout("Server took too long to respond")
 
     @asynccontextmanager
     async def append(self, raw_message):
@@ -98,15 +96,9 @@ class OutboundMessageManager:
         self.queue.put_nowait((raw_message, waiting))
         done = await waiting
 
-        ctx = SimpleNamespace(task=asyncio.current_task(), timed_out=False)
-
         try:
-            async with concurrent_tasks(self._cancel_after_timeout(ctx)):
+            async with race_against(self._raise_timeout_error()):
                 yield
-        except asyncio.CancelledError:
-            if not ctx.timed_out:
-                raise
-            raise ServerResponseTimeout("Server took too long to respond") from None
         finally:
             done.set_result(None)
 
