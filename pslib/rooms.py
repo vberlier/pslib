@@ -49,11 +49,14 @@ class Room(GlobalCommandsMixin):
 
     def handle_leave(self):
         self.joined = False
-
-        self.state = type(self.state)(maxlogs=self.state.maxlogs)
+        self.reset_state()
 
         if self.id in self.client.rooms:
             del self.client.rooms[self.id]
+
+    def reset_state(self):
+        if self.id:
+            self.state = type(self.state)(maxlogs=self.state.maxlogs)
 
     @property
     def logs(self):

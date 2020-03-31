@@ -63,6 +63,24 @@ async def test_connect_nonsticky_uri_correct():
             break
 
 
+async def test_join_reset(client):
+    room = await client.join("help")
+    assert room.logs
+    await room.leave()
+    assert not room.logs
+
+
+async def test_join_reset_lobby(client):
+    room = await client.join("lobby")
+    assert room is client
+    assert room.joined
+    assert room.logs
+
+    await client.leave("lobby")
+    assert not room.joined
+    assert room.logs
+
+
 async def test_double_join(client):
     with pytest.raises(AlreadyJoinedRoom):
         await client.join("lobby")
