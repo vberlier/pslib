@@ -11,6 +11,8 @@ __all__ = [
     "JoiningRoomFailed",
     "ServerResponseTimeout",
     "ReceivedErrorMessage",
+    "AlreadyJoinedRoom",
+    "AlreadyLeftRoom",
 ]
 
 
@@ -59,4 +61,12 @@ class ServerResponseTimeout(PslibError):
 
 
 class ReceivedErrorMessage(PslibError):
+    pass
+
+
+class AlreadyJoinedRoom(PslibError):
+    pass
+
+
+class AlreadyLeftRoom(PslibError):
     pass

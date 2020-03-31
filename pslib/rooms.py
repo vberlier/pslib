@@ -37,13 +37,21 @@ class Room(GlobalCommandsMixin):
         self.id = room_id
         self.state = state
 
+        self.already_joined = False
+        self.already_left = False
+
     async def handle_message(self, message):
         await self.state.handle_message(message)
 
     def handle_join(self):
+        self.already_joined = True
+
         self.client.rooms[self.id] = self
 
     def handle_leave(self):
+        self.already_joined = False
+        self.already_left = True
+
         self.state = type(self.state)(maxlogs=self.state.maxlogs)
 
         if self.id in self.client.rooms:
