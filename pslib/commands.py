@@ -16,6 +16,16 @@ from .errors import (
 from .utils import into_id
 
 
+def _check_room_param(room_instance, room_id):
+    if room_id is None:
+        room_id = room_instance.id
+
+    if not room_id:
+        raise InvalidRoomId("Expected valid room id")
+
+    return room_instance.client.rooms[room_id], room_id
+
+
 class GlobalCommandsMixin:
     async def login(self, username, password=None, *, server_id=None):
         userid = into_id(username)
@@ -73,13 +83,7 @@ class GlobalCommandsMixin:
             ]
 
     async def join(self, room_id=None):
-        if room_id is None:
-            room_id = self.id
-
-        if not room_id:
-            raise InvalidRoomId("Expected valid room id")
-
-        room = self.client.rooms[room_id]
+        room, room_id = _check_room_param(self, room_id)
 
         async with self.client.send_command("join", room_id):
             if not await room.state.joined:
@@ -89,13 +93,7 @@ class GlobalCommandsMixin:
             return room
 
     async def leave(self, room_id=None):
-        if room_id is None:
-            room_id = self.id
-
-        if not room_id:
-            raise InvalidRoomId("Expected valid room id")
-
-        room = self.client.rooms[room_id]
+        room, room_id = _check_room_param(self, room_id)
 
         async with self.client.send_command("leave", room_id):
             await room.expect(DeinitMessage)
