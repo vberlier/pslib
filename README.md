@@ -12,12 +12,19 @@
 import asyncio
 import pslib
 
+async def join_battles(client):
+    while True:
+        for battle in await client.query_battles():
+            await battle.join()
+
+async def display_logs(client):
+    async for message in client.listen(pslib.WinMessage, all_rooms=True):
+        print(message.room.logs)
+        await message.room.leave()
+
 async def main():
     async with pslib.connect() as client:
-        await client.login("username", "password")
-
-        async for message in client.listen(pslib.PrivateMessage):
-            print(message.sender, message.content)
+        await asyncio.gather(join_battles(client), display_logs(client))
 
 asyncio.run(main())
 ```
