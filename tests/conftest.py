@@ -1,9 +1,10 @@
 import pytest
 
-from pslib import Client
+from pslib import connect
 
 
 @pytest.fixture
 async def client():
-    async with Client.connect() as client:
+    uri = "ws://sim.smogon.com:8000/showdown/websocket"
+    async with connect(uri=uri, sticky=False) as client:
         yield client
