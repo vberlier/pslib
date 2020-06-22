@@ -271,7 +271,7 @@ description = "py.test plugin to abort hanging tests"
 name = "pytest-timeout"
 optional = false
 python-versions = "*"
-version = "1.4.0"
+version = "1.4.1"
 
 [package.dependencies]
 pytest = ">=3.6.0"
@@ -356,7 +356,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "014f0cc335353b6b6ed45aded206319607ecbb60c79490cb1ddd974879dcccb4"
+content-hash = "7424ba81f629fbbc01b95df5beed7bb8c2f87654d34d2baa927d66d90851d741"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -500,8 +500,8 @@ pytest-asyncio = [
     {file = "pytest-asyncio-0.12.0.tar.gz", hash = "sha256:475bd2f3dc0bc11d2463656b3cbaafdbec5a47b47508ea0b329ee693040eebd2"},
 ]
 pytest-timeout = [
-    {file = "pytest-timeout-1.4.0.tar.gz", hash = "sha256:d46426af764f108ca1bd18ca092307e1356c17f74388c396fd5447c2231318e6"},
-    {file = "pytest_timeout-1.4.0-py2.py3-none-any.whl", hash = "sha256:93753a127a7435684c70569c7c8de380b135b70be712de94734001a3225ab0ea"},
+    {file = "pytest-timeout-1.4.1.tar.gz", hash = "sha256:6d0fb4ce74cebb81be252e4e0d9c2a91f30270b33208cfa0f1da6eed9abf18ac"},
+    {file = "pytest_timeout-1.4.1-py2.py3-none-any.whl", hash = "sha256:c10650550e0c4fef5b06274411377c8b54c7b370c34b632fd4ce1a9b170f5ba3"},
 ]
 regex = [
     {file = "regex-2020.2.20-cp27-cp27m-win32.whl", hash = "sha256:99272d6b6a68c7ae4391908fc15f6b8c9a6c345a46b632d7fdb7ef6c883a2bbb"},
