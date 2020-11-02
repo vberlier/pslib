@@ -28,7 +28,7 @@ websockets = "^8.1"
 black = "^19.10b0"
 rope = "^0.18.0"
 pylint = "^2.6.0"
-pytest = "^6.1.1"
+pytest = "^6.1.2"
 pytest-asyncio = "^0.14.0"
 pytest-timeout = "^1.4.2"
 
