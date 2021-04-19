@@ -26,7 +26,7 @@ websockets = "^8.1"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
-rope = "^0.18.0"
+rope = "^0.19.0"
 pylint = "^2.7.2"
 pytest = "^6.2.2"
 pytest-asyncio = "^0.14.0"
