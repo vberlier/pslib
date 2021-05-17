@@ -25,7 +25,7 @@ aiohttp = "^3.6.2"
 websockets = "^8.1"
 
 [tool.poetry.dev-dependencies]
-black = "^19.10b0"
+black = "^21.5b1"
 rope = "^0.18.0"
 pylint = "^2.7.2"
 pytest = "^6.2.2"
